@@ -158,19 +158,35 @@ Windows与Mac系统的环境配置略有不同，但都属于基础操作，这�
 
 ```python
 def downloadPage(url):
-    # 下载页面方法，用requests模块，使用代理，避免重复请求次数过多
+    # 下载页面方法，用requests模块，使用代理，避免重复请求次数过多；多开几个进程，加快下载速度
     headers = {
+        'Connection': 'close',
         'Content-Type':'text/html; charset=utf-8',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.87 Safari/537.36' }
-    data = requests.get(url, headers=headers).text
-    return data
+    try:
+        data = requests.get(url, headers=headers).text
+        return data
+    except BaseException:
+
+        if(url in errordic):
+            errordic[url] = errordic[url]+1
+        else:
+            errordic[url] =1
+        if(errordic[url]<4):
+            print(url + '【第】'+str(errordic[url])+'次重试】')
+            return downloadPage(url)
+        else:
+            print(url + '【下载页面失败】')
+            return ''
 ```
 
-这里我们用的URL是某一个城市的页面地址，http://butie.nongji360.com/catalog/index/anhui。为避免访问次数过多，我们使用 `User-Agent`，中文名为用户代理，简称 UA。它是一个特殊字符串头，使得服务器能够识别客户使用的操作系统及版本、CPU 类型、浏览器及版本、浏览器渲染引擎、浏览器语言、浏览器插件等。网站可以通判断 UA 来给不同的操作系统、不同的浏览器发送不同的页面，对于爬虫来说，UA就是标明身份的第一层标识。
+这里我们用的URL是某一个城市的页面地址，http://butie.nongji360.com/index/index/beijing。 
+
+为避免访问次数过多，我们使用 `User-Agent`，中文名为用户代理，简称 UA。它是一个特殊字符串头，使得服务器能够识别客户使用的操作系统及版本、CPU 类型、浏览器及版本、浏览器渲染引擎、浏览器语言、浏览器插件等。网站可以通判断 UA 来给不同的操作系统、不同的浏览器发送不同的页面，对于爬虫来说，UA就是标明身份的第一层标识。
 
 通过 `downloadPage`函数，我可以获取到网页的源代码，如果把它打印出来，其结果如下：
 
-![image-20200621094255996](/Users/qiaopeng/Library/Application Support/typora-user-images/image-20200621094255996.png)
+![image-20200622172135283](https://tva1.sinaimg.cn/large/007S8ZIlly1gg16vqkm0mj31ck0ra10n.jpg)
 
 ### 2、获取目标表格中的数据
 
@@ -180,9 +196,8 @@ def downloadPage(url):
 
 ```python
 def getData(url):
-    # 获取表格中的数据，找到有用的几个信息，品目、分档、补贴
+    # 获取表格中的数据，找到有用的几个信息，产品名称、公司名称、补贴
     content = downloadPage(url)
-    print(content)
     soup = BeautifulSoup(content, 'html.parser')
     list = soup.find('table').findAll('tr')
     pageDatas = []
@@ -190,25 +205,37 @@ def getData(url):
         tds = i.findAll('td')
         if (len(tds) == 0):
             continue
-        if (len(tds)<4):
+        if (len(tds)<5):
             continue
-        pinmu = tds[1].get_text()
-        fendang = tds[2].get_text()
-        butie = tds[3].get_text()
-        res = {
-            "pinmu":pinmu,
-            "fendang":fendang,
-            "butie":butie
-        }
+        name =  tds[4].get_text()
+        detailUrl = ''
+        if(name == '查看详情'):
+            detailUrl = tds[4].find('a').attrs['href']
+        else:
+            detailUrl = tds[5].find('a').attrs['href']
+        res = getDetail(baseUrl+detailUrl)
         pageDatas.append(res)
     return pageDatas
 ```
 
-通过我们之前对网页的分析可以看出，表格的内容都在`<table>`标签下，而且整个源代码只有一个`<table>`标签。具体某一个单元格的数据可以通过`<tr>`和`<td>`这两个标签获取。
+```python
+def getDetail(url):
+# 获取表格中【查看详情的页面】
+    content = downloadPage(url)
+    soup = BeautifulSoup(content, 'html.parser')
+    trs = soup.find("div",attrs={"class": "xiang_qing"}).find("table").findAll("tr")
+    res = {}
+    for tr in trs:
+        tds = tr.findAll("td")
+        res[tds[0].get_text()] = tds[1].get_text()
+    return res
+```
+
+通过我们之前对网页的分析可以看出，表格的内容都在`<table>`标签下，而且整个源代码只有一个`<table>`标签。具体某一个单元格的数据可以通过`<tr>`和`<td>`这两个标签获取。我们的目标数据都在【查看详情】，然后再调用
 
 通过 `getData`函数，我可以获取到某个网页的表格数据，如果把它打印出来，其结果如下：
 
-![image-20200621095037777](/Users/qiaopeng/Library/Application Support/typora-user-images/image-20200621095037777.png)
+![image-20200622172611967](https://tva1.sinaimg.cn/large/007S8ZIlly1gg170jc548j31qi0gk77i.jpg)
 
 ### 3、获取表格的全部分页
 
@@ -219,8 +246,9 @@ def getPageSize(url):
     # 获取表格的分页总数
     content = downloadPage(url)
     soup = BeautifulSoup(content, 'html.parser')
-    list = soup.find('div', attrs={"id":"id_page_def"}).findAll("a")
-    return int(list[-1].attrs['page'])
+    list = soup.find('div', attrs={"id": "id_page_def"}).findAll("a")
+    pageNum = int(list[-1].attrs['page'])
+    return pageNum
 ```
 
 通过我们之前对网页的分析可以看出，分页栏的内容都在`<id_page_def>`标签下，而且整个源代码只有一个`<id_page_def>`标签。每个页面对应一个`<a>`标签，尾页是在最后一个`<a>`标签中。
@@ -237,12 +265,11 @@ def getCityList(url):
     cityList = []
     content = downloadPage(url)
     soup = BeautifulSoup(content, 'html.parser')
-    list = soup.find("div", attrs={"class":"tiaojian_list"}).findAll("div")
-    listA = list[0].findAll('a')
-    for a in listA:
+    list = soup.find("div", attrs={"class": "tiaojian_list"}).findAll('a')
+    for a in list:
         name = a.get_text()
         href = a.attrs['href']
-        cityList.append({'href':href, 'name':name})
+        cityList.append({'href': href, 'name': name})
     return cityList
 ```
 
@@ -250,35 +277,38 @@ def getCityList(url):
 
 通过`getCityList`函数，我们获取到了这个网站中所有的城市数据。如果把这个函数的内容打印出来，结果如下：
 
-![image-20200621100454020](/Users/qiaopeng/Library/Application Support/typora-user-images/image-20200621100454020.png)
+![image-20200622174047430](https://tva1.sinaimg.cn/large/007S8ZIlly1gg17fq7nxtj31kq0g6acz.jpg)
 
 ### 5、获取全部城市的目标数据
 
 这是最后一步，我们通过之前的函数，已经实现下载网页源代码、获取表格中的数据、获取表格的分页数、获取全部城市的信息。现在，我们就要实现一次性获取全部城市的购置补贴数据。
 
 ```python
-def downAllDatas():
-    # 下载所有城市的数据
-    url = "http://butie.nongji360.com/catalog/index/anhui"
-    citylist = getCityList(url)
-    for city in citylist:
-        cityHref = baseUrl+city.get('href')
-        cityData = []
-        pageSize = getPageSize(cityHref)
-        i = 1
-        while(i < pageSize):
-            pageDatas = getData(cityHref+"?p"+str(i))
-            cityData.extend(pageDatas)
-            i += i
-        datas[city.get('name')] = cityData
-    return datas
+def getCityData(city):
+    # 下载每个城市的数据，并写入JSON
+    datas = {}
+    cityHref = baseUrl + city.get('href')
+    cityData = []
+    pageSize = getPageSize(cityHref)
+    print(city.get('name') + ":[总页数]" + str(pageSize))
+
+    for i in range(pageSize):
+        print(city.get('name') + ":[当前页数]" + str(i+1))
+        durl = cityHref + "?p=" + str(i + 1)
+        pageDatas = getData(durl)
+        cityData.extend(pageDatas)
+    datas[city.get('name')] = cityData
+    with open(city.get('name')+'.json', 'w', encoding="utf-8") as f:
+        print('写入文件'+city.get('name')+'.json')
+        json.dump(datas, f, ensure_ascii=False)
+    return 'success'
 ```
 
  其中，`baseUrl`和`datas`是定义的两个全局变量，分别表示是要查询的目标基础URL和存储查询结果数据。
 
 截止目前，我们就完成了农机购置补贴数据的获取，获取结果我们存在JSON中，打印出来可以看到如下结果。
 
-![image-20200621101525921](/Users/qiaopeng/Library/Application Support/typora-user-images/image-20200621101525921.png)
+![image-20200622174149289](https://tva1.sinaimg.cn/large/007S8ZIlly1gg17guztcuj31hc0oejwr.jpg)
 
 ## 四、数据可视化开发
 

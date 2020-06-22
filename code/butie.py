@@ -9,11 +9,12 @@ import time
 
 # 常量定义
 
-# 定义输出文件
+# 定义基础URL，即目标url
 baseUrl = "http://butie.nongji360.com"
-
-
+#定义错误字典
 errordic = {}
+
+
 def downloadPage(url):
     # 下载页面方法，用requests模块，使用代理，避免重复请求次数过多；多开几个进程，加快下载速度
     headers = {
@@ -38,7 +39,7 @@ def downloadPage(url):
 
 
 def getData(url):
-    # 获取表格中的数据，找到有用的几个信息，产品名称、公司名称、补贴
+    # 获取表格中的数据
     content = downloadPage(url)
     soup = BeautifulSoup(content, 'html.parser')
     list = soup.find('table').findAll('tr')
@@ -57,9 +58,12 @@ def getData(url):
             detailUrl = tds[5].find('a').attrs['href']
         res = getDetail(baseUrl+detailUrl)
         pageDatas.append(res)
+    print(pageDatas)
     return pageDatas
 
+
 def getDetail(url):
+# 获取表格中【查看详情的页面】
     content = downloadPage(url)
     soup = BeautifulSoup(content, 'html.parser')
     trs = soup.find("div",attrs={"class": "xiang_qing"}).find("table").findAll("tr")
@@ -88,6 +92,7 @@ def getCityList(url):
         name = a.get_text()
         href = a.attrs['href']
         cityList.append({'href': href, 'name': name})
+    print(cityList)
     return cityList
 
 
@@ -125,4 +130,6 @@ def getCityData(city):
 
 
 if __name__ == '__main__':
-    downAllDatas()
+    url = 'http://butie.nongji360.com/index/index/beijing'
+    getCityList(url)
+    # downAllDatas()
