@@ -64,7 +64,7 @@ Windows与Mac系统的环境配置略有不同，但都属于基础操作，这�
 
 > http://butie.nongji360.com/
 
-![image-20200620230238708](/Users/qiaopeng/Library/Application Support/typora-user-images/image-20200620230238708.png)
+![image-20200622152401522](https://tva1.sinaimg.cn/large/007S8ZIlly1gg13hg67bmj318v0u0wu6.jpg)
 
 ### 2、网站分析
 
