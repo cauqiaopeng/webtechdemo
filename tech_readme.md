@@ -54,7 +54,31 @@ Windows与Mac系统的环境配置略有不同，但都属于基础操作，这�
 
 从 [git 工具官⽹](https://git-scm.com/downloads) 直接下载安装程序，按提示选择合适系统安装。
 
-+ 新建
++ 新建GitHub账户
+
+按照GitHub系统提醒，注册用户即可。记住用户名密码。
+
++ 在pycharm中配置
+
+需要在pycharm中配置git、GitHub相关信息。
+
+#### 3.2GitHub使用
+
+在GitHub新建一个`Repositories`（仓库），然后在pycharm中`clone`这个项目。之后就可以在本地开始coding了。
+
+登录GitHub网站后，在右上角点击【+】，选择【New Repositories】即可。按照提示操作，输入项目名称。
+
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg145gerhnj30sw0l0acm.jpg" alt="image-20200622154707715" style="zoom:33%;" />
+
+新建好`Repositories`后，回到pycharm，在【VCS】-【checkout from version control】中clone这个项目。
+
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg148lqwkuj31660nikcg.jpg" alt="image-20200622155008843" style="zoom: 50%;" />
+
+> 参见材料：
+>
+> >  PyCharm 配置 Git 教程: https://cloud.tencent.com/developer/article/1478265
+> >
+> > git及GitHub教程：https://www.liaoxuefeng.com/wiki/896043488029600/900937935629664
 
 ## 二、目标网站分析
 
@@ -72,25 +96,25 @@ Windows与Mac系统的环境配置略有不同，但都属于基础操作，这�
 
 推荐使用Chrome的开发者工具来观察网页结构。在OS X上，通过`option+command+i`可以打开Chrome的开发者工具，或者通过**视图** -**开发者** 进入开发者模式。在Windows和Linux，对应的快捷键是"F12"。
 
-![image-20200620230729245](/Users/qiaopeng/Library/Application Support/typora-user-images/image-20200620230729245.png)
+![image-20200620230729245](https://tva1.sinaimg.cn/large/007S8ZIlly1gg142qyxofj30zs0k0e09.jpg)
 
 通过观察网页 ，我们会发现，需要的数据都展示在表格当中。通过开发者工具，可以看到这个表格的标签是 `<table>`  。因此，在获取数据的时候，我们只需要这个`<table>` 标签下的内容即可。
 
-![image-20200620231547393](/Users/qiaopeng/Library/Application Support/typora-user-images/image-20200620231547393.png)
+![image-20200620231547393](https://tva1.sinaimg.cn/large/007S8ZIlly1gg1436dit0j31850u0dp8.jpg)
 
 针对表格内的每一行数据进行分析，可以看到，每一行的标签是`<tr>` ，每个单元格的标签是`<td>` 。
 
-![image-20200620232013335](/Users/qiaopeng/Library/Application Support/typora-user-images/image-20200620232013335.png)
+![image-20200620232013335](https://tva1.sinaimg.cn/large/007S8ZIlly1gg143tvciuj31le0s0wlp.jpg)
 
 下一步我们针对**分页** 进行分析。我们可以看到，分页内容全都在一个`<id_page_def>` 标签下，每一页都是一个`<a>` 标签，而尾页是在最后一个`<a>` 内。所以，我们可以通过这两个标签获取到所有的分页。
 
-![image-20200620232501962](/Users/qiaopeng/Library/Application Support/typora-user-images/image-20200620232501962.png)
+![image-20200620232501962](https://tva1.sinaimg.cn/large/007S8ZIlly1gg1440sdu3j31hu0u07d7.jpg)
 
 截止目前，我们具备了获取针对某个城市的所有补贴数据的信息。那么，对于不同的城市如何处理？现在我们针对不同的城市进行分析。我们可以看到，在页面上有一个选择城市的选项。
 
 通过开发者工具，我可以看到，城市的选择都是在一个`<tiaojian_list>` 的标签下，每个城市都有一个`<a>` 标签，`<a>` 标签内有一个链接，`text`内容是这个城市的名字。因此，我们可以通过这两个标签，获取到所有的城市。同时，通过观察可以看到，这里`<a>`标签内的链接，恰好就是对应到这个城市的URL。
 
-![image-20200620233314109](/Users/qiaopeng/Library/Application Support/typora-user-images/image-20200620233314109.png)
+![image-20200620233314109](https://tva1.sinaimg.cn/large/007S8ZIlly1gg1445lidvj31qk0u0jzv.jpg)
 
 我们已经完成了网页内容的大概分析，对如何进行获取数据也有了基本的思路。
 
