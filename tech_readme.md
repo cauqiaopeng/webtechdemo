@@ -277,7 +277,7 @@ def getCityList(url):
 
 通过`getCityList`函数，我们获取到了这个网站中所有的城市数据。如果把这个函数的内容打印出来，结果如下：
 
-![image-20200622174047430](https://tva1.sinaimg.cn/large/007S8ZIlly1gg17fq7nxtj31kq0g6acz.jpg)
+![image-20200622175709003](https://tva1.sinaimg.cn/large/007S8ZIlly1gg17wqswusj31oo0ic77e.jpg)
 
 ### 5、获取全部城市的目标数据
 
