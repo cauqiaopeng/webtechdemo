@@ -1,4 +1,4 @@
-# web技术及数据获取与处理实训
+# bbweb技术及数据获取与处理实训
 
 [toc]
 
@@ -23,42 +23,135 @@
 
 
 
-## 一、基础知识及网站分析
+## 一、网络爬虫概要
 
-### 1、工具包
+### 1、网络爬虫概述
 
-```python
-import requests
-from bs4 import BeautifulSoup
-import json
-from concurrent.futures import ThreadPoolExecutor, as_completed
-```
+> 网络爬虫（英语：web crawler），也叫网络蜘蛛（spider），是一种用来自动浏览万维网的网络机器人。其目的一般为编纂网络索引。
+>
+> 网络搜索引擎等站点通过爬虫软件更新自身的网站内容或其对其他网站的索引。网络爬虫可以将自己所访问的页面保存下来，以便搜索引擎事后生成索引供用户搜索。
 
-> **Requests**  是用Python语言编写，基于 `urllib`，采用 `Apache2 Licensed` 开源协议的 HTTP 库。它比 `urllib`  更加方便，可以节约我们大量的工作，完全满足 HTTP 测试需求。Requests 的哲学是以 PEP 20 的习语为中心开发的，所以它比 `urllib` 更加 `Pythoner`。更重要的一点是它支持 Python3 哦！
+网络爬虫始于一个被称作种子的统一资源地址（URL）列表。当网络爬虫访问这些`URL`时，它们会甄别出页面上所有的超链接，并将它们写入一张“待访列表”，即所谓爬行区域。此区域上的`URL`将会被按照一套策略循环来访问。如果爬虫在执行的过程中复制归档和保存网站上的信息，使他们可以较容易的被查看。阅读和浏览他们存储的网站上并即时更新的信息，这些被存储的网页又被称为“快照”。越大容量的网页意味着网络爬虫只能在给予的时间内下载越少部分的网页，所以要优先考虑其下载。高变化率意味着网页可能已经被更新或者被取代。一些服务器端软件生成的`URL`也使得网络爬虫很难避免检索到重复内容。
 
-> **Beautiful Soup** 是一个可以从 HTML或XML文件中提取数据的Python库.它能够通过你喜欢的转换器实现惯用的文档导航，查找，修改文档的方式。**Beautiful Soup** 会帮你节省数小时甚至数天的工作时间。
+![python爬虫](https://tva1.sinaimg.cn/large/007S8ZIlly1gg2i35qxb9j30ea073tca.jpg)
 
-### 2、Python的安装及开发环境
+简单来说，网络爬虫就是模拟“人”的行为对浏览器进行操作，发送网络请求，接收请求响应，按照一定的规则，自动地抓取互联网信息的程序。
 
-采用`Python`语言进行数据获取。
+### 2、网络搜索引擎
+
+> 网络搜索引擎（英语：web search engine）是设计在万维网上进行搜索，意思是指自动从万维网搜集特定的信息，提供给用户进行查询的系统。
+
+搜索结果通常会以行列式的链接展示，亦称为搜索结果页 (Search engine results page，SERP)。这些消息链接可能是连至网页、图像、影片、信息图表、文章、研究论文或其他类型的文件。 一些搜索引擎亦会在其他的数据库或目录中搜索可用数据。与依靠人工维持的网站目录不同，搜索引擎进行的实时搜索，是以网络爬虫 (web crawler)进行运行算法得出来。而没法被搜索出来的是称为深网 (deep web)。
+
+下图是一个网络搜索引擎的简单架构。可以看出，网络爬虫是其中的一部分，一个搜索引擎往往有着N多个网络爬虫，一般来说，这里的网络爬虫都是“合法的”。
+
+![img](https://tva1.sinaimg.cn/large/007S8ZIlly1gg2botuz93j30pq0ea0th.jpg)
+
+### 3、网页抓取策略
+
+爬虫的实现由以下策略组成：
+
++ 指定页面下载的选择策略
+
+- 检测页面是否改变的重新访问策略
+- 定义如何避免网站过度访问的约定性策略
+- 如何部署分布式网络爬虫的并行策略
+
+### 4、讨论：“你的爬虫会送你进监狱吗？”
+
+#### 4.1 爬虫究竟是合法还是违法的
+
+> 《刑法》第二百八十五条规定，违反规定侵入国家事务、国防建设、尖端科学技术领域的计算机信息系统的，不论情节严重与否，构成非法侵入计算机信息系统罪。
+>
+> 《刑法》第二百八十六条还规定，违反国家规定，对计算机信息系统功能进行删除、修改、增加、干扰，造成计算机信息系统不能正常运行，后果严重的，构成犯罪，处五年以下有期徒刑或者拘役；后果特别严重的，处五年以上有期徒刑。而违反国家规定，对计算机信息系统中存储、处理或者传输的数据和应用程序进行删除、修改、增加的操作，后果严重的，也构成犯罪，依照前款的规定处罚
+
+> 《网络安全法》第六十四条规定，违反本法第四十四条规定，窃取或者以其他非法方式获取、非法出售或者非法向他人提供个人信息，尚不构成犯罪的，由公安机关没收违法所得，并处违法所得一倍以上十倍以下罚款，没有违法所得的，处一百万元以下罚款。
+
+> 《反不正当竞争法》第十二条第二款中，法律会对爬虫的这种行为进行规制。
+>
+> 即经营者不得利用技术手段，通过影响用户选择或者其他方式，实施下列妨碍、破坏其他经营者合法提供的网络产品或者服务正常运行的行为：…（四）其他妨碍、破坏其他经营者合法提供的网络产品或者服务正常运行的行为。
+
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2had2c69j31960o44qp.jpg" alt="image-20200623200650715" style="zoom: 30%;" />
+
+各种法律法规条文中，关于对于网络爬虫的一些行为都有着相当多的规范和限制。但是，在实际的网络世界中，江湖传言，互联网上50%以上的流量都是由爬虫创造的。似乎可以说没有爬虫，就没有今天互联网的繁荣。比如今日头条、各类门户网站的新闻，甚至是哔哩哔哩等视频网站。
+
+那是否可以说，技术无罪？
+
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2hhf6qozj30kk0dqjsb.jpg" alt="快播案辩方实力逆天！经典语录汇总| 雷锋网" style="zoom:50%;" />
+
+***
+
++ 总结一下，爬虫所带来的风险主要有：
+
+1. 违反网站意愿，例如网站采取反爬措施后，强行突破其反爬措施；
+2. 爬虫干扰了被访问网站的正常运营；
+3. 爬虫抓取了受到法律保护的特定类型的数据或信息。
+
+其中，第3类风险主要来自于通过规避反爬虫措施抓取到了互联网上未被公开的信息。
+
++ 爬虫开发者在使用爬虫时应注意以下事项：
+
+1. 严格遵守网站设置的`robots`协议；
+2. 在规避反爬虫措施的同时，需要优化自己的代码，避免干扰被访问网站的正常运行；
+3. 在设置抓取策略时，应注意编码抓取视频、音乐等可能构成作品的数据，或者针对某些特定网站批量抓取其中的用户生成内容；
+4. 在使用、传播抓取到的信息时，应审查所抓取的内容，如发现属于用户的个人信息、隐私或者他人的商业秘密的，应及时停止并删除。
+
+#### 4.2 君子约定：robots协议 
+
+> `robots.txt`：放在网页服务器上，告知网络蜘蛛哪些页面内容可获取或不可获取。
+
+例子：如淘宝的`robots.txt`. 此处含义是禁止`Baiduspider`.
+
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2aful8dbj30q009ywfn.jpg" alt="image-20200623161006970" style="zoom:67%;" />
+
+再比如，这这个京东的`robots.txt`。
+
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2ajiqae9j30ps0f076f.jpg" alt="image-20200623161347582" style="zoom:67%;" />
+
+## 二、开发环境及GitHub介绍
+
+### 1、Python的安装及开发环境
+
+采用`Python`语言来实现网络爬虫。
+
+> “Life is short, you need Python!”——*Bruce Eckel*（作者*Bruce Eckel* ，著作有的《Thinking in C++》和《Thinking in Java》）
+>
+> 人生苦短，我用python！
 
 推荐使用`Anaconda`作为`python`的包管理器和环境管理器，使用 `Jupyter notebook`作为日常数据分析的工具。
 
-本教程使用`Pycharm` 作为项目的集成开发环境。学生可使用`cau.edu.cn` 的邮箱获取一年的免费使用权。
+本教程使用`PyCharm` 作为项目的集成开发环境，`PyCharm` 是由 JetBrains 打造的一款 Python IDE，支持 macOS、 Windows、 Linux 系统。学生可使用`cau.edu.cn` 的邮箱获取一年的免费使用权。
 
-> `Jupyter Notebook `（前身是IPython Notebook）是一个基于Web的交互式计算环境，用于创建`Jupyter Notebook`文档。`Notebook`一词可以通俗地引用许多不同的实体，主要是`Jupyter Web`应用程序、`Jupyter Python Web`服务器或`Jupyter`文档格式（取决于上下文）。`Jupyter Notebook`文档是一个[JSON](https://zh.wikipedia.org/wiki/JSON)文档，遵循版本化模式，包含一个有序的输入/输出单元格列表，这些单元格可以包含代码、文本（使用[Markdown](https://zh.wikipedia.org/wiki/Markdown)语言）、数学、图表和富媒体，通常以“.ipynb”结尾扩展。
+> `Jupyter Notebook `（前身是IPython Notebook）是一个基于Web的交互式计算环境，用于创建`Jupyter Notebook`文档。`Notebook`一词可以通俗地引用许多不同的实体，主要是`Jupyter Web`应用程序、`Jupyter Python Web`服务器或`Jupyter`文档格式（取决于上下文）。`Jupyter Notebook`文档是一个[JSON](https://zh.wikipedia.org/wiki/JSON)文档，遵循版本化模式，包含一个有序的输入/输出单元格列表，这些单元格可以包含代码、文本（使用[Markdown](https://zh.wikipedia.org/wiki/Markdown)语言）、数学、图表和富媒体，通常以`“.ipynb”`结尾扩展。
 
 在Windows与Mac系统下，python和pycharm的的环境配置略有不同，但都属于基础操作，这里不赘述。
 
-> python的安装及配置参照：https://www.runoob.com/python/python-install.html
+> python的安装及配置教程地址：https://www.runoob.com/python/python-install.html
 >
 > pycharm的下载地址：https://www.jetbrains.com/pycharm/
+>
+> PyCharm的安装教程地址：[http://www.runoob.com/w3cnote/pycharm-windows-install.html](https://www.runoob.com/w3cnote/pycharm-windows-install.html)
+>
+> Anaconda下载地址：https://www.anaconda.com/
+>
+> Jupyter Notebook介绍、安装及使用教程地址://www.jianshu.com/p/91365f343585
 
-### 3、GitHub使用
+### 2、GitHub使用
 
 >GitHub是通过Git进行版本控制的软件源代码托管服务平台，由GitHub公司的开发者Chris Wanstrath、PJ Hyett和Tom Preston-Werner使用Ruby on Rails编写而成。 GitHub同时提供付费账户和免费账户。
 
-#### 3.1 环境准备
+#### 3.1 git介绍
+
+> git是一个分布式版本控制软件，最初由林纳斯·托瓦兹创作，于2005年以GPL发布。最初目的是为更好地管理Linux内核开发而设计。
+>
+> git最初的开发动力来自于BitKeeper和Monotone。git最初只是作为一个可以被其他前端包装的后端而开发的，但后来git内核已经成熟到可以独立地用作版本控制。很多著名的软件都使用git进行版本控制，其中包括Linux内核、X.Org服务器和OLPC内核等项目的开发流程。
+
+####  3.2 使用GitHub环境准备
+
++ git与GitHub
+
+> git是一个版本控制工具
+> github是一个用git做版本控制的项目托管平台
 
 + 注册 GitHub 账号
 
@@ -80,9 +173,13 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 需要在pycharm中配置git、GitHub相关信息。
 
-#### 3.2GitHub使用
+> 配置参考：
+>
+> PyCharm 配置 Git 教程地址：https://cloud.tencent.com/developer/article/1478265
 
-在GitHub新建一个`Repositories`（仓库），然后在pycharm中`clone`这个项目。之后就可以在本地开始coding了。
+#### 3.2 GitHub使用
+
+在GitHub新建一个`Repositories`（仓库），然后在pycharm中clone这个项目。之后就可以在本地的开发环境中开始coding了。
 
 登录GitHub网站后，在右上角点击【+】，选择【New Repositories】即可。按照提示操作，输入项目名称。
 
@@ -98,39 +195,45 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 ![image-20200622195749045](https://tva1.sinaimg.cn/large/007S8ZIlly1gg1beaz0gqj31mi0pa4oq.jpg)
 
++ 本次课程将通过GitHub完成，包括组内协同开发、小组成果提交等！
+
 > 参考材料：
 >
 > >  PyCharm 配置 Git 教程: https://cloud.tencent.com/developer/article/1478265
 > >
 > > git及GitHub教程：https://www.liaoxuefeng.com/wiki/896043488029600/900937935629664
 
-## 二、目标网站分析
+## 三、目标网站分析
 
-### 1、目标网站
+### 1、获取数据任务
 
-农机360网-购置补贴查询系统
+获取2020年全国各地农业机械的补贴数据。按照不同的城市分别存储。
+
+### 2、目标网站
+
+农机360网-购置补贴查询系统。
 
 > http://butie.nongji360.com/
 
 ![image-20200622152401522](https://tva1.sinaimg.cn/large/007S8ZIlly1gg13hg67bmj318v0u0wu6.jpg)
 
-### 2、网站分析
+### 3、网站分析
 
-对于一个软件项目，在开始coding之前，我们要思考系统的需求是什么，要达到什么目的。同样，在编写爬虫之前，我们需要先思考爬虫需要干什么、目标网站有什么特点，以及根据目标网站的数据量和数据特点选择合适的架构。
+对于任何一个软件项目，在开始coding之前，我们都要思考，所开发的软件系统的需求是什么，要达到什么目的。同样，在编写爬虫之前，我们需要先思考爬虫需要干什么、目标网站有什么特点，以及根据目标网站的数据量和数据特点选择合适的架构。
 
-#### 2.1 网页分析利器-开发者工具
+#### 3.1 网页分析利器-开发者工具
 
 推荐使用Chrome的开发者工具来观察网页结构。在OS X上，通过`option+command+i`可以打开Chrome的开发者工具，或者通过**视图** -**开发者** 进入开发者模式。在Windows和Linux，对应的快捷键是"F12"。
 
 ![image-20200622195628761](https://tva1.sinaimg.cn/large/007S8ZIlly1gg1bcwt83hj31jg0tqqrl.jpg)
 
-#### 2.2 目标网页分析
+#### 3.2 目标网页分析
 
 在浏览器打开http://butie.nongji360.com/ 页面，可以看到网页中间就是我们所需要的数据。打开【开发者工具】。通过观察者页面的内容 ，我们可以发现，可以看到这个表格的标签是 `<table>`，而且整个页面只有这一个标签，即没有第二个 `<table>`标签了  。因此，在获取数据的时候，我们只需要这个`<table>` 标签下的内容。
 
 ![image-20200620231547393](https://tva1.sinaimg.cn/large/007S8ZIlly1gg1436dit0j31850u0dp8.jpg)
 
-#### 2.3 分析表格内的数据
+#### 3.3 分析表格内的数据
 
 针对表格内的每一行数据进行分析，可以看到，每一行的标签是`<tr>` ，每个单元格的标签是`<td>` 。
 
@@ -140,7 +243,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 <img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg157mtvt8j30y10u0tei.jpg" alt="image-20200622162348325" style="zoom:50%;" />
 
-#### 2.4 表格的分页分析
+#### 3.4 表格的分页分析
 
 下一步我们针对**分页** 进行分析。我们可以看到，分页内容全都在一个`<id_page_def>` 标签下，每一页都是一个`<a>` 标签，而尾页是在最后一个`<a>` 内。所以，我们可以通过这两个标签获取到所有的分页。
 
@@ -148,7 +251,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 
-#### 2.5 分析不同城市的数据
+#### 3.5 分析不同城市的数据
 
 截止目前，我们具备了获取针对某个城市的所有补贴数据的信息。那么，对于不同的城市如何处理？现在我们针对不同的城市进行分析。我们可以看到，在页面上有一个选择城市的选项。
 
@@ -158,7 +261,20 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 我们已经完成了网页内容的大概分析，对如何进行获取数据也有了基本的思路。
 
-## 三、爬虫的代码实现
+## 四、爬虫的代码实现
+
+### 2、工具包
+
+```python
+import requests
+from bs4 import BeautifulSoup
+import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
+```
+
+> **Requests**  是用Python语言编写，基于 `urllib`，采用 `Apache2 Licensed` 开源协议的 HTTP 库。它比 `urllib`  更加方便，可以节约我们大量的工作，完全满足 HTTP 测试需求。Requests 的哲学是以 PEP 20 的习语为中心开发的，所以它比 `urllib` 更加 `Pythoner`。更重要的一点是它支持 Python3 哦！
+
+> **Beautiful Soup** 是一个可以从 HTML或XML文件中提取数据的Python库.它能够通过你喜欢的转换器实现惯用的文档导航，查找，修改文档的方式。**Beautiful Soup** 会帮你节省数小时甚至数天的工作时间。
 
 ### 1、下载网页源代码
 
@@ -330,19 +446,50 @@ def getCityData(city):
 
 ![image-20200622174149289](https://tva1.sinaimg.cn/large/007S8ZIlly1gg17guztcuj31hc0oejwr.jpg)
 
-## 四、数据可视化开发
+## 五、总结
 
-### 1、Echarts使用
++ 介绍了网络爬虫的概要
++ 介绍了使用到的开发环境和工具
++ 分析了目标网站并找到抓取策略
++ 实现了全国农机购置补贴数据的抓取
 
-> ECharts，一个使用 JavaScript 实现的开源可视化库，可以流畅的运行在 PC 和移动设备上，兼容当前绝大部分浏览器（IE8/9/10/11，Chrome，Firefox，Safari等），底层依赖矢量图形库 [ZRender](https://github.com/ecomfe/zrender)，提供直观，交互丰富，可高度个性化定制的数据可视化图表。
+## 六、拓展
+
+### 1、数据库的使用
+
+> Python 操作 MySQL 数据库教程地址：https://www.runoob.com/python/python-mysql.html
+
+### 2、数据可视化-Echarts
+
+ECharts 是一个使用 JavaScript 实现的开源可视化库，涵盖各行业图表，满足各种需求。
+
+ECharts 遵循 Apache-2.0 开源协议，免费商用。
+
+ECharts 兼容当前绝大部分浏览器（IE8/9/10/11，Chrome，Firefox，Safari等）及兼容多种设备，可随时随地任性展示。
+
+> Echarts官方网站地址：https://echarts.apache.org/zh/index.html
 >
-> 官网首页：https://echarts.apache.org/zh/index.html
+> Echarts官方教程地址 ：https://echarts.apache.org/zh/tutorial.html
 
+![image-20200623212257535](https://tva1.sinaimg.cn/large/007S8ZIlly1gg2jh7o2k7j31nz0u04qt.jpg)
 
+## 七、实训内容及要求
 
-### 2、MySQL使用
+项目名称：题目可参考附录，或者自拟题目（需向助教确认）。
 
-### 3、数据可视化Web系统开发
+完成方式：
 
++ 分组完成，组长负责协调组内分工，每个人需要有明确的任务。
++ 使用GitHub进行协同开发，每个组一个`Repositories`（仓库），建好`Repositories`后将链接发给助教。
++ 每组除了完成自己的项目之外，还需要试运行其余各组的代码（该组宣布完成或者到时间节点后 ）。
++ 结课汇报时，由组长进行汇报，汇报时间5-10分钟。
 
+评分组成：
 
++ 结课汇报：60%。由老师和助教给小组打分。组内成员的分数由组长打分，最高分不高于小组的分数，每位组员的分值不可以全部一致。（如：给A组的打分为90分，组长可给每个组员打分的最高值为90分。）
++ 日常分：40%。由GitHub的star数量组成。每位同学针对该项目的试运行情况、日常`commit`情况等，决定是否`star`对这个项目，即对这个项目点赞。综合各个项目的点赞数，经助教统计后，记为日常分。该分值组内成员全部一致。（如：A组的项目最后`star`数量为20个星，则A组成员的日常分为该`star`数经过换算后的分值）。
+
+题目附录：
+
++ 全国农产品批发市场价格信息系统：http://pfsc.agri.cn/
++ 全国农机化信息服务平台：http://www.njztc.com/
