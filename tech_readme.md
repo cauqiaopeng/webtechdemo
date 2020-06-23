@@ -12,10 +12,10 @@
 
 实训目标：
 
-+ 掌握GitHub协同开发
++ 掌握利用GitHub进行协同开发
 + 掌握Web爬虫的基本流程
 + 实现获取网站数据
-+ 掌握数据可视化工具
++ 熟练掌握利用Python进行项目开发
 
 
 
@@ -34,7 +34,7 @@ import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 ```
 
-> **Requests**  是用Python语言编写，基于 urllib，采用 Apache2 Licensed 开源协议的 HTTP 库。它比 urllib 更加方便，可以节约我们大量的工作，完全满足 HTTP 测试需求。Requests 的哲学是以 PEP 20 的习语为中心开发的，所以它比 urllib 更加 Pythoner。更重要的一点是它支持 Python3 哦！
+> **Requests**  是用Python语言编写，基于 `urllib`，采用 `Apache2 Licensed` 开源协议的 HTTP 库。它比 `urllib`  更加方便，可以节约我们大量的工作，完全满足 HTTP 测试需求。Requests 的哲学是以 PEP 20 的习语为中心开发的，所以它比 `urllib` 更加 `Pythoner`。更重要的一点是它支持 Python3 哦！
 
 > **Beautiful Soup** 是一个可以从 HTML或XML文件中提取数据的Python库.它能够通过你喜欢的转换器实现惯用的文档导航，查找，修改文档的方式。**Beautiful Soup** 会帮你节省数小时甚至数天的工作时间。
 
@@ -46,7 +46,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 本教程使用`Pycharm` 作为项目的集成开发环境。学生可使用`cau.edu.cn` 的邮箱获取一年的免费使用权。
 
-Windows与Mac系统的环境配置略有不同，但都属于基础操作，这里不赘述。
+> `Jupyter Notebook `（前身是IPython Notebook）是一个基于Web的交互式计算环境，用于创建`Jupyter Notebook`文档。`Notebook`一词可以通俗地引用许多不同的实体，主要是`Jupyter Web`应用程序、`Jupyter Python Web`服务器或`Jupyter`文档格式（取决于上下文）。`Jupyter Notebook`文档是一个[JSON](https://zh.wikipedia.org/wiki/JSON)文档，遵循版本化模式，包含一个有序的输入/输出单元格列表，这些单元格可以包含代码、文本（使用[Markdown](https://zh.wikipedia.org/wiki/Markdown)语言）、数学、图表和富媒体，通常以“.ipynb”结尾扩展。
+
+在Windows与Mac系统下，python和pycharm的的环境配置略有不同，但都属于基础操作，这里不赘述。
 
 > python的安装及配置参照：https://www.runoob.com/python/python-install.html
 >
@@ -84,13 +86,19 @@ Windows与Mac系统的环境配置略有不同，但都属于基础操作，这�
 
 登录GitHub网站后，在右上角点击【+】，选择【New Repositories】即可。按照提示操作，输入项目名称。
 
-<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg145gerhnj30sw0l0acm.jpg" alt="image-20200622154707715" style="zoom:33%;" />
+
+
+![image-20200622195710573](https://tva1.sinaimg.cn/large/007S8ZIlly1gg1bdmz2ajj31ls0l078e.jpg)
+
+
 
 新建好`Repositories`后，回到pycharm，在【VCS】-【checkout from version control】中clone这个项目。
 
-<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg148lqwkuj31660nikcg.jpg" alt="image-20200622155008843" style="zoom: 50%;" />
 
-> 参见材料：
+
+![image-20200622195749045](https://tva1.sinaimg.cn/large/007S8ZIlly1gg1beaz0gqj31mi0pa4oq.jpg)
+
+> 参考材料：
 >
 > >  PyCharm 配置 Git 教程: https://cloud.tencent.com/developer/article/1478265
 > >
@@ -114,7 +122,7 @@ Windows与Mac系统的环境配置略有不同，但都属于基础操作，这�
 
 推荐使用Chrome的开发者工具来观察网页结构。在OS X上，通过`option+command+i`可以打开Chrome的开发者工具，或者通过**视图** -**开发者** 进入开发者模式。在Windows和Linux，对应的快捷键是"F12"。
 
-![image-20200620230729245](https://tva1.sinaimg.cn/large/007S8ZIlly1gg142qyxofj30zs0k0e09.jpg)
+![image-20200622195628761](https://tva1.sinaimg.cn/large/007S8ZIlly1gg1bcwt83hj31jg0tqqrl.jpg)
 
 #### 2.2 目标网页分析
 
@@ -284,6 +292,18 @@ def getCityList(url):
 这是最后一步，我们通过之前的函数，已经实现下载网页源代码、获取表格中的数据、获取表格的分页数、获取全部城市的信息。现在，我们就要实现一次性获取全部城市的购置补贴数据。
 
 ```python
+def downAllDatas():
+    # 下载所有城市的数据
+    url = "http://butie.nongji360.com/index/index/beijing"
+    citylist = getCityList(url)
+    datasThreads = []
+    with ThreadPoolExecutor(max_workers=40) as t:
+      for city in citylist:
+          d= t.submit(getCityData, city)
+          datasThreads.append(d)
+      for future in as_completed(datasThreads):
+          print(future)
+
 def getCityData(city):
     # 下载每个城市的数据，并写入JSON
     datas = {}
@@ -304,15 +324,21 @@ def getCityData(city):
     return 'success'
 ```
 
- 其中，`baseUrl`和`datas`是定义的两个全局变量，分别表示是要查询的目标基础URL和存储查询结果数据。
-
 截止目前，我们就完成了农机购置补贴数据的获取，获取结果我们存在JSON中，打印出来可以看到如下结果。
+
+
 
 ![image-20200622174149289](https://tva1.sinaimg.cn/large/007S8ZIlly1gg17guztcuj31hc0oejwr.jpg)
 
 ## 四、数据可视化开发
 
 ### 1、Echarts使用
+
+> ECharts，一个使用 JavaScript 实现的开源可视化库，可以流畅的运行在 PC 和移动设备上，兼容当前绝大部分浏览器（IE8/9/10/11，Chrome，Firefox，Safari等），底层依赖矢量图形库 [ZRender](https://github.com/ecomfe/zrender)，提供直观，交互丰富，可高度个性化定制的数据可视化图表。
+>
+> 官网首页：https://echarts.apache.org/zh/index.html
+
+
 
 ### 2、MySQL使用
 

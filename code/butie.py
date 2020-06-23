@@ -63,7 +63,7 @@ def getData(url):
 
 
 def getDetail(url):
-# 获取表格中【查看详情的页面】
+    # 获取表格中【查看详情的页面】
     content = downloadPage(url)
     soup = BeautifulSoup(content, 'html.parser')
     trs = soup.find("div",attrs={"class": "xiang_qing"}).find("table").findAll("tr")
@@ -130,6 +130,6 @@ def getCityData(city):
 
 
 if __name__ == '__main__':
-    url = 'http://butie.nongji360.com/index/index/beijing'
-    getCityList(url)
-    # downAllDatas()
+    # url = 'http://butie.nongji360.com/index/index/beijing'
+    # getCityList(url)
+    downAllDatas()
