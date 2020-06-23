@@ -73,11 +73,13 @@
 
 <img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2had2c69j31960o44qp.jpg" alt="image-20200623200650715" style="zoom: 30%;" />
 
+
+
 各种法律法规条文中，关于对于网络爬虫的一些行为都有着相当多的规范和限制。但是，在实际的网络世界中，江湖传言，互联网上50%以上的流量都是由爬虫创造的。似乎可以说没有爬虫，就没有今天互联网的繁荣。比如今日头条、各类门户网站的新闻，甚至是哔哩哔哩等视频网站。
 
 那是否可以说，技术无罪？
 
-<img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gg2hhf6qozj30kk0dqjsb.jpg" alt="快播案辩方实力逆天！经典语录汇总| 雷锋网" style="zoom:50%;" />
+
 
 ***
 
