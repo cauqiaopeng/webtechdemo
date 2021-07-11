@@ -495,43 +495,33 @@ ECharts 兼容当前绝大部分浏览器（IE8/9/10/11，Chrome，Firefox，Saf
 + GitHub的`Repositories`（仓库）地址。
 + 成果汇报的视频，时长5～10分钟。介绍项目情况、组员贡献、实现过程等。
 
-### 2、小作业
 
-作业要求
+### 2、成绩组成
 
-+ 利用Windows的IIS等服务器建立个人网站，以个人简介为主要内容。
-
-完成方式
-
-+ 个人完成。
-
-作业成果
-
-+ 提交视频介绍，不超过2分钟。
-
-+ GitHub的`Repositories`（仓库）地址（可选）。
-
-### 3、成绩组成
-
-#### 3.1 大作业
+#### 2.1 大作业
 
 分数占比：60%。
 
 打分说明：根据提交的作业成果给小组打分。组内成员的分数由组长打分。即，每个人的分数=小组的分数 *（ 组长打分/100） （如：给A组的打分为90分，A组长给B同学打分为96分，则B同学的得分为：90 *（96/100）=86.4分。组长需要给自己打分。）
 
-#### 3.2 小作业
+#### 2.2 平时分
 
 分数占比：20%。
 
-打分说明：根据提交的作业成果进行打分。
+打分说明：根据github的提交记录等数据来评价每个同学的项目实现过程的优良性。即，每天往github上commit材料的同学的项目进展良好、规律，平时分高。
 
-#### 3.3 小组互评
+#### 2.3 小组互评
 
 分数占比：20%。
 
-打分说明：小组间互相打分，分数百分制，分数标注在对应小组的代码运行报告封面。取平均值为该组的小组互评得分。小组互评的得分，小组内的组员保持一致。即，如A组的小组互评得分为90分，则A组同学的所有小组互评得分均为90分。
+打分说明：小组间互相打分，分数百分制。取平均值为该组的小组互评得分。小组互评的得分，小组内的组员保持一致。即，如A组的小组互评得分为90分，则A组同学的所有小组互评得分均为90分。
 
-### 附录：
+### 附录：往届项目参考
 
-+ 全国农产品批发市场价格信息系统：http://pfsc.agri.cn/
-+ 全国农机化信息服务平台：http://www.njztc.com/
++ Light Web Crawler for Tourists Attraction：https://github.com/QuLiao1117/light-web-crawler
++ 《乘风破浪的姐姐》微博数据爬虫：https://github.com/webZBWteam/Web-Crawler
++ 携程等航班信息爬虫：https://github.com/FBIdd/FlightSteward
++ B站用户综合排行榜数据可视化：https://github.com/garylin111/Web-technology-training
++ 安居客北京各区二手房信息爬虫：https://github.com/snow-rong/datascience_groupwork
++ Covid-19-outbreak-data：https://github.com/JZhaoqi/Covid-19-outbreak-data
++ 农机信息平台爬虫：https://github.com/loserrrrrrrr/NjztcSpider
