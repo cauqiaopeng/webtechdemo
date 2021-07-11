@@ -516,12 +516,3 @@ ECharts 兼容当前绝大部分浏览器（IE8/9/10/11，Chrome，Firefox，Saf
 
 打分说明：小组间互相打分，分数百分制。取平均值为该组的小组互评得分。小组互评的得分，小组内的组员保持一致。即，如A组的小组互评得分为90分，则A组同学的所有小组互评得分均为90分。
 
-### 附录：往届项目参考
-
-+ Light Web Crawler for Tourists Attraction：https://github.com/QuLiao1117/light-web-crawler
-+ 《乘风破浪的姐姐》微博数据爬虫：https://github.com/webZBWteam/Web-Crawler
-+ 携程等航班信息爬虫：https://github.com/FBIdd/FlightSteward
-+ B站用户综合排行榜数据可视化：https://github.com/garylin111/Web-technology-training
-+ 安居客北京各区二手房信息爬虫：https://github.com/snow-rong/datascience_groupwork
-+ Covid-19-outbreak-data：https://github.com/JZhaoqi/Covid-19-outbreak-data
-+ 农机信息平台爬虫：https://github.com/loserrrrrrrr/NjztcSpider
